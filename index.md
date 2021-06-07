@@ -1,32 +1,32 @@
-## Welcome to GitHub Pages
+## Hack The Box - Jeeves (10.10.10.63)
 
-You can use the [editor on GitHub](https://github.com/michaelyamout/writeups/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+To begin with, we will start an nmap scan on our target as part of our first enumeration steps. For this, I will opt to use nmapAutomator, although you can run a traditional nmap scan. 
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
-
-### Markdown
+### Enumeration
 
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 
 ```markdown
-Syntax highlighted code block
+'PORT      STATE SERVICE      VERSION
+80/tcp    open  http         Microsoft IIS httpd 10.0
+| http-methods: 
+|_  Potentially risky methods: TRACE
+|_http-server-header: Microsoft-IIS/10.0
+|_http-title: Ask Jeeves
+135/tcp   open  msrpc        Microsoft Windows RPC
+445/tcp   open  microsoft-ds Microsoft Windows 7 - 10 microsoft-ds (workgroup: WORKGROUP)
+50000/tcp open  http         Jetty 9.4.z-SNAPSHOT
+|_http-server-header: Jetty(9.4.z-SNAPSHOT)
+|_http-title: Error 404 Not Found
+Service Info: Host: JEEVES; OS: Windows; CPE: cpe:/o:microsoft:windows'
 
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
 
 **Bold** and _Italic_ and `Code` text
 
 [Link](url) and ![Image](src)
 ```
+We have four open ports on our target machine. After no success with enumerating port 445 (SMB) I decide to open our target machine in a web browser to view what is hosted on port 80 (http://10.10.10.63:80). It appears our target is running ‘Ask Jeeves’ as a service and is running on ‘Microsoft-IIS/10.0’. I will ran a DirBuster scan to enumerate furthur files and directories here but did not obtain anything useful. 
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
 
 ### Jekyll Themes
 

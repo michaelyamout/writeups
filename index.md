@@ -1,5 +1,7 @@
 ## Hack The Box - Jeeves (10.10.10.63)
-Jeeves is a medium box from Hack The Box and it is a Windows machine. It presents a minor rabbit hole but with enough enumeration and familiarity with Windows Powershell, Netcat, and Hashcat attackers should have no issue obtaining their flags. 
+Jeeves is a medium box from Hack The Box and it is a Windows machine. It presents a minor rabbit hole but with enough enumeration and familiarity with Windows Powershell, Netcat, and Hashcat attackers should have no issue obtaining their flags. Watch the video walkthough on Youtube <a href="https://www.youtube.com/watch?v=u3iB1mrolRU">HERE</a> or read along.
+
+[![Watch Video Walkthough](https://img.youtube.com/vi/u3iB1mrolRU/0.jpg)](https://www.youtube.com/watch?v=u3iB1mrolRU)
 
 
 ### Enumeration
